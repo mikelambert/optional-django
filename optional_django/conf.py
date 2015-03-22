@@ -11,14 +11,11 @@ class Conf(object):
     def __init__(self, namespace, settings):
         self._namespace = namespace
         self._settings = settings
-        overrides = self.get_env_overrides()
-        if overrides:
-            self.configure(overrides)
-            self._configured_from_env = True
-
-    def get_env_overrides(self):
         if DJANGO_CONFIGURED:
-            return DJANGO_SETTINGS.get(self._namespace, None)
+            overrides = getattr(DJANGO_SETTINGS, self._namespace, None)
+            if overrides:
+                self.configure(overrides)
+                self._configured_from_env = True
 
     def configure(self, overrides):
         if self._has_been_configured:

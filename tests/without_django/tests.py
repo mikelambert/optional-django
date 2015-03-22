@@ -1,9 +1,17 @@
+import os
 import unittest
-from conf_utils.conf import Conf
-from conf_utils.env import DJANGO_INSTALLED, DJANGO_CONFIGURED, DJANGO_SETTINGS
+from optional_django.conf import Conf
+from optional_django.staticfiles import find
+from optional_django.env import DJANGO_INSTALLED, DJANGO_CONFIGURED, DJANGO_SETTINGS
+from optional_django import six
 
 
-class TestConfUtils(unittest.TestCase):
+class TestOptionalDjangoWithoutDjango(unittest.TestCase):
+    def test_env_detection(self):
+        self.assertTrue(DJANGO_INSTALLED)
+        self.assertFalse(DJANGO_CONFIGURED)
+        self.assertIsNone(DJANGO_SETTINGS)
+
     def test_basic_conf_instance(self):
         test_conf = Conf('test_conf', {
             'TEST_SETTING_1': 1,
@@ -27,7 +35,12 @@ class TestConfUtils(unittest.TestCase):
         self.assertEqual(test_conf.get('TEST_SETTING_1', None), 1)
         self.assertEqual(test_conf.get('TEST_SETTING_2', None), {'FOO': 'BAR'})
 
-    def test_django_is_detected_but_is_not_configured_by_default(self):
-        self.assertTrue(DJANGO_INSTALLED)
-        self.assertFalse(DJANGO_CONFIGURED)
-        self.assertEqual(DJANGO_SETTINGS, None)
+    def test_staticfiles_find_only_matches_absolute_paths(self):
+        self.assertIsNone(find('test.js'))
+        self.assertIsNone(find('test_app/static/test.js'))
+        abs_path = os.path.join(os.path.dirname(__file__), 'test_app', 'static', 'test.js')
+        self.assertTrue(os.path.exists(abs_path))
+        self.assertEqual(find(abs_path), abs_path)
+
+    def test_six_is_accessible(self):
+        self.assertTrue(six.PY2 or six.PY3)

@@ -1,3 +1,0 @@
-TEST_OVERRIDES = {
-    'FOO': 'BAR'
-}
