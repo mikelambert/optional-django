@@ -2,6 +2,7 @@ import os
 import unittest
 from optional_django.conf import Conf
 from optional_django.env import DJANGO_INSTALLED, DJANGO_CONFIGURED, DJANGO_SETTINGS
+from optional_django.exceptions import ConfigurationError
 from optional_django.staticfiles import find
 from optional_django import six
 
@@ -19,6 +20,9 @@ class TestConfUtilsDjangoIntegration(unittest.TestCase):
         })
         self.assertEqual(test_overrides.FOO, 'BAR')
         self.assertEqual(test_overrides.BAR, 1)
+        self.assertTrue(test_overrides._has_been_configured)
+        self.assertTrue(test_overrides._configured_from_env)
+        self.assertRaises(ConfigurationError, test_overrides.configure, {})
 
     def test_staticfiles_find_matches_relative_and_absolute_paths(self):
         abs_path = os.path.join(os.path.dirname(__file__), 'test_app', 'static', 'test.js')

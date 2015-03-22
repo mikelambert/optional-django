@@ -1,6 +1,7 @@
 import os
 import unittest
 from optional_django.conf import Conf
+from optional_django.exceptions import ConfigurationError
 from optional_django.staticfiles import find
 from optional_django.env import DJANGO_INSTALLED, DJANGO_CONFIGURED, DJANGO_SETTINGS
 from optional_django import six
@@ -34,6 +35,9 @@ class TestOptionalDjangoWithoutDjango(unittest.TestCase):
         })
         self.assertEqual(test_conf.get('TEST_SETTING_1', None), 1)
         self.assertEqual(test_conf.get('TEST_SETTING_2', None), {'FOO': 'BAR'})
+        self.assertTrue(test_conf._has_been_configured)
+        self.assertFalse(test_conf._configured_from_env)
+        self.assertRaises(ConfigurationError, test_conf.configure, {})
 
     def test_staticfiles_find_only_matches_absolute_paths(self):
         self.assertIsNone(find('test.js'))
