@@ -6,6 +6,7 @@ from optional_django.exceptions import ConfigurationError
 from optional_django.staticfiles import find
 from optional_django import six
 from optional_django.serializers import JSONEncoder
+from optional_django.safestring import mark_safe
 
 
 class TestConfUtilsDjangoIntegration(unittest.TestCase):
@@ -49,3 +50,9 @@ class TestConfUtilsDjangoIntegration(unittest.TestCase):
         self.assertNotEqual(JSONEncoder, _JSONEncoder)
         from django.core.serializers.json import DjangoJSONEncoder
         self.assertEqual(JSONEncoder, DjangoJSONEncoder)
+
+    def test_mark_safe_is_available(self):
+        from django.utils.safestring import mark_safe as _mark_safe
+        self.assertEqual(mark_safe, _mark_safe)
+        string = 'foo'
+        self.assertEqual(mark_safe(string), string)

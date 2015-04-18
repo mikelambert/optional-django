@@ -6,6 +6,7 @@ from optional_django.staticfiles import find
 from optional_django.env import DJANGO_INSTALLED, DJANGO_CONFIGURED, DJANGO_SETTINGS
 from optional_django import six
 from optional_django.serializers import JSONEncoder
+from optional_django.safestring import mark_safe
 
 
 class TestOptionalDjangoWithoutDjango(unittest.TestCase):
@@ -74,5 +75,13 @@ class TestOptionalDjangoWithoutDjango(unittest.TestCase):
         self.assertTrue(six.PY2 or six.PY3)
 
     def test_json_encoders_are_available(self):
+        from django.core.serializers.json import DjangoJSONEncoder
+        self.assertNotEqual(JSONEncoder, DjangoJSONEncoder)
         from json import JSONEncoder as _JSONEncoder
         self.assertEqual(JSONEncoder, _JSONEncoder)
+
+    def test_mark_safe_is_available(self):
+        from django.utils.safestring import mark_safe as _mark_safe
+        self.assertNotEqual(mark_safe, _mark_safe)
+        string = 'foo'
+        self.assertEqual(mark_safe(string), string)
