@@ -5,6 +5,7 @@ from optional_django.env import DJANGO_INSTALLED, DJANGO_CONFIGURED, DJANGO_SETT
 from optional_django.exceptions import ConfigurationError
 from optional_django.staticfiles import find
 from optional_django import six
+from optional_django.serializers import JSONEncoder
 
 
 class TestConfUtilsDjangoIntegration(unittest.TestCase):
@@ -42,3 +43,9 @@ class TestConfUtilsDjangoIntegration(unittest.TestCase):
     def test_vendored_six_is_not_django_vendored_version(self):
         from django.utils import six as django_six
         self.assertNotEqual(six, django_six)
+
+    def test_json_encoders_are_available(self):
+        from json import JSONEncoder as _JSONEncoder
+        self.assertNotEqual(JSONEncoder, _JSONEncoder)
+        from django.core.serializers.json import DjangoJSONEncoder
+        self.assertEqual(JSONEncoder, DjangoJSONEncoder)

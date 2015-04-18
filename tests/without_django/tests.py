@@ -5,6 +5,7 @@ from optional_django.exceptions import ConfigurationError
 from optional_django.staticfiles import find
 from optional_django.env import DJANGO_INSTALLED, DJANGO_CONFIGURED, DJANGO_SETTINGS
 from optional_django import six
+from optional_django.serializers import JSONEncoder
 
 
 class TestOptionalDjangoWithoutDjango(unittest.TestCase):
@@ -71,3 +72,7 @@ class TestOptionalDjangoWithoutDjango(unittest.TestCase):
 
     def test_six_is_accessible(self):
         self.assertTrue(six.PY2 or six.PY3)
+
+    def test_json_encoders_are_available(self):
+        from json import JSONEncoder as _JSONEncoder
+        self.assertEqual(JSONEncoder, _JSONEncoder)

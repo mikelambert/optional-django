@@ -5,8 +5,8 @@ optional-django
 
 Utils for apps to provide optional support for django applications.
 
-In short, this is a grab bag of utils to shim around environments
-which may or may not include a configured version of django.
+In short, this is a grab bag of utils to shim around environments which may or may not
+include a configured version of django.
 
 
 Installation
@@ -94,6 +94,16 @@ from optional_django.env import DJANGO_CONFIGURED
 # if DJANGO_CONFIGURED is True, DJANGO_SETTINGS is django.conf.settings
 # else, None
 from optional_django.env import DJANGO_SETTINGS
+```
+
+
+serializers
+-----------
+
+```python
+# if DJANGO_CONFIGURED is True, JSONEncoder is django.core.serializers.json.DjangoJSONEncoder
+# else, JSONEncoder is json.JSONEncoder
+from optional_django.serializers import JSONEncoder
 ```
 
 
