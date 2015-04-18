@@ -3,7 +3,7 @@ optional-django
 
 [![Build Status](https://travis-ci.org/markfinger/optional-django.svg?branch=master)](https://travis-ci.org/markfinger/optional-django)
 
-Utils for apps to provide optional support for django applications.
+Utils for providing optional support for django.
 
 In short, this is a grab bag of utils to shim around environments which may or may not
 include a configured version of django.
