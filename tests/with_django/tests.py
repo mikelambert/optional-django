@@ -1,6 +1,6 @@
 import os
 import unittest
-from optional_django.conf import Conf
+from optional_django import conf
 from optional_django.env import DJANGO_INSTALLED, DJANGO_CONFIGURED, DJANGO_SETTINGS
 from optional_django.exceptions import ConfigurationError
 from optional_django.staticfiles import find
@@ -14,15 +14,20 @@ class TestConfUtilsDjangoIntegration(unittest.TestCase):
         self.assertIsNotNone(DJANGO_SETTINGS)
 
     def test_namespaces_can_have_default_values_overridden(self):
-        test_overrides = Conf('TEST_OVERRIDES', {
-            'FOO': 'NOT-BAR',
-            'BAR': 1,
-        })
-        self.assertEqual(test_overrides.FOO, 'BAR')
-        self.assertEqual(test_overrides.BAR, 1)
-        self.assertTrue(test_overrides._has_been_configured)
-        self.assertTrue(test_overrides._configured_from_env)
-        self.assertRaises(ConfigurationError, test_overrides.configure, {})
+        class Conf(conf.Conf):
+            django_namespace = 'TEST_OVERRIDES'
+            FOO = 'NOT-BAR'
+            BAR = 1
+
+        settings = Conf()
+
+        self.assertEqual(settings.FOO, 'BAR')
+        self.assertEqual(settings.BAR, 1)
+        self.assertTrue(settings._has_been_configured)
+        self.assertTrue(settings._configured_from_env)
+
+        # Ensure that Conf's can only be configured once
+        self.assertRaises(ConfigurationError, settings.configure, FOO='this should fail')
 
     def test_staticfiles_find_matches_relative_and_absolute_paths(self):
         abs_path = os.path.join(os.path.dirname(__file__), 'test_app', 'static', 'test.js')

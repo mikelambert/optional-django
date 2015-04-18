@@ -21,22 +21,35 @@ Settings
 --------
 
 ```python
-from optional_django.conf import Conf
+from optional_django import conf
 
-settings = Conf('SOME_APP', {
-	# defaults
-	'FOO': 'BAR',
-	'ONE': 1,
-})
+class Conf(conf.Conf):
+    django_namespace = 'SOME_APP'
 
-settings.FOO  # 'BAR', or an overridden value
+    FOO = 'BAR'
+    BAR = [1,2,3]
+	WOZ = 4
+
+settings = Conf()
+
+print(settings.WOZ)  # 4, or the value of django.conf.settings.SOME_APP['WOZ']
 
 # If django is available and configured, Conf inspects django.conf.settings and
-# updates the defaults, if it finds a dictionary named 'SOME_APP'.
+# looks for a dictionary named 'SOME_APP'. If found, it will override the defaults
+# with any keys that match the Conf instance's attributes
 
-# If django is not available, the user can override your `settings` by importing
-# the variable and calling `settings.configure({ 'FOO': 'WOO' })`, which will
-# update your defaults.
+# If django is not available or the namepace defined does not have a matching
+# definition in settings, the user can override the defaults by calling `configure`
+# on the Conf instance...
+
+from some_app.conf import settings
+
+settings.configure(
+    FOO='some value',
+    WOZ=5
+)
+
+print(settings.WOZ)  # 5
 ```
 
 

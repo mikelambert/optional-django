@@ -1,6 +1,6 @@
 import os
 import unittest
-from optional_django.conf import Conf
+from optional_django import conf
 from optional_django.exceptions import ConfigurationError
 from optional_django.staticfiles import find
 from optional_django.env import DJANGO_INSTALLED, DJANGO_CONFIGURED, DJANGO_SETTINGS
@@ -14,30 +14,53 @@ class TestOptionalDjangoWithoutDjango(unittest.TestCase):
         self.assertIsNone(DJANGO_SETTINGS)
 
     def test_basic_conf_instance(self):
-        test_conf = Conf('test_conf', {
-            'TEST_SETTING_1': 1,
-            'TEST_SETTING_2': {
+        class Conf(conf.Conf):
+            django_namespace = 'TEST_SETTINGS'
+
+            TEST_SETTING_1 = 1
+            TEST_SETTING_2 = {
                 'FOO': 'BAR'
             }
-        })
-        self.assertEqual(test_conf.TEST_SETTING_1, 1)
-        self.assertEqual(test_conf.TEST_SETTING_2, {'FOO': 'BAR'})
+
+        settings = Conf()
+
+        self.assertEqual(settings.TEST_SETTING_1, 1)
+        self.assertEqual(settings.TEST_SETTING_2, {'FOO': 'BAR'})
 
     def test_conf_instance_can_be_configured_at_runtime(self):
-        test_conf = Conf('test_conf', {})
-        self.assertEqual(test_conf.get('TEST_SETTING_1', None), None)
-        self.assertEqual(test_conf.get('TEST_SETTING_2', None), None)
-        test_conf.configure({
-            'TEST_SETTING_1': 1,
-            'TEST_SETTING_2': {
+        class Conf(conf.Conf):
+            TEST_SETTING_1 = 1
+            TEST_SETTING_2 = {
                 'FOO': 'BAR'
             }
-        })
-        self.assertEqual(test_conf.get('TEST_SETTING_1', None), 1)
-        self.assertEqual(test_conf.get('TEST_SETTING_2', None), {'FOO': 'BAR'})
-        self.assertTrue(test_conf._has_been_configured)
-        self.assertFalse(test_conf._configured_from_env)
-        self.assertRaises(ConfigurationError, test_conf.configure, {})
+
+        settings = Conf()
+
+        self.assertFalse(settings._has_been_configured)
+        self.assertFalse(settings._configured_from_env)
+
+        settings.configure(
+            TEST_SETTING_2='foo'
+        )
+
+        self.assertTrue(settings._has_been_configured)
+        self.assertFalse(settings._configured_from_env)
+
+        self.assertEqual(settings.TEST_SETTING_1, 1)
+        self.assertEqual(settings.TEST_SETTING_2, 'foo')
+
+        self.assertRaises(ConfigurationError, settings.configure, TEST_SETTING_2='this should fail')
+
+    def test_conf_instance_can_not_have_attributes_set(self):
+        class Conf(conf.Conf):
+            TEST_SETTING_1 = 1
+            TEST_SETTING_2 = {
+                'FOO': 'BAR'
+            }
+
+        settings = Conf()
+
+        self.assertRaises(ConfigurationError, setattr, settings, 'TEST_SETTING_1', 2)
 
     def test_staticfiles_find_only_matches_absolute_paths(self):
         self.assertIsNone(find('test.js'))
