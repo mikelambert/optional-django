@@ -49,7 +49,11 @@ settings.configure(
     WOZ=5
 )
 
+print(settings.FOO)  # 'some value'
+print(settings.BAR)  # [1, 2, 3]
 print(settings.WOZ)  # 5
+
+# To prevent mutation of state, Conf objects can only be configured once.
 ```
 
 
