@@ -25,14 +25,19 @@ class Conf(object):
         self._lock()
 
     def _unlock(self):
-        self.__setattr__('_configurable', True, bypass=True)
+        super(Conf, self).__setattr__('_configurable', True)
 
     def _lock(self):
-        self.__setattr__('_configurable', False, bypass=True)
+        super(Conf, self).__setattr__('_configurable', False)
 
     def configure(self, **kwargs):
         if self._has_been_configured:
-            raise ConfigurationError('Conf object has already been configured')
+            raise ConfigurationError(
+                '{}.{} has already been configured'.format(
+                    type(self).__module__,
+                    type(self).__name__,
+                )
+            )
 
         self._unlock()
 
@@ -46,7 +51,7 @@ class Conf(object):
 
         self._lock()
 
-    def __setattr__(self, *args, **kwargs):
-        if not self._configurable and 'bypass' not in kwargs:
-            raise ConfigurationError('Use `.config({...})` to define settings')
-        return super(Conf, self).__setattr__(*args)
+    def __setattr__(self, name, value):
+        if not self._configurable:
+            raise ConfigurationError('Use `.configure({}=<value>, ...)` to change settings'.format(name))
+        super(Conf, self).__setattr__(name, value)

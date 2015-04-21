@@ -29,6 +29,8 @@ class TestOptionalDjangoWithoutDjango(unittest.TestCase):
         self.assertEqual(settings.TEST_SETTING_1, 1)
         self.assertEqual(settings.TEST_SETTING_2, {'FOO': 'BAR'})
 
+        self.assertRaises(ConfigurationError, setattr, settings, 'TEST_SETTING_1', 2)
+
     def test_conf_instance_can_be_configured_at_runtime(self):
         class Conf(conf.Conf):
             TEST_SETTING_1 = 1
