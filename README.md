@@ -17,46 +17,6 @@ pip install optional-django
 ```
 
 
-Settings
---------
-
-```python
-from optional_django import conf
-
-class Conf(conf.Conf):
-    django_namespace = 'SOME_APP'
-
-    FOO = 'BAR'
-    BAR = [1,2,3]
-	WOZ = 4
-
-settings = Conf()
-
-print(settings.WOZ)  # 4, or the value of django.conf.settings.SOME_APP['WOZ']
-
-# If django is available and configured, Conf inspects django.conf.settings and
-# looks for a dictionary named 'SOME_APP'. If found, it will override the defaults
-# with any keys that match the Conf instance's attributes
-
-# If django is not available or the namepace defined does not have a matching
-# definition in settings, the user can override the defaults by calling `configure`
-# on the Conf instance...
-
-from some_app.conf import settings
-
-settings.configure(
-    FOO='some value',
-    WOZ=5
-)
-
-print(settings.FOO)  # 'some value'
-print(settings.BAR)  # [1, 2, 3]
-print(settings.WOZ)  # 5
-
-# To prevent mutation of state, Conf objects can only be configured once.
-```
-
-
 Finding staticfiles
 -------------------
 
@@ -108,6 +68,41 @@ serializers
 # if DJANGO_CONFIGURED is True, JSONEncoder is django.core.serializers.json.DjangoJSONEncoder
 # else, JSONEncoder is json.JSONEncoder
 from optional_django.serializers import JSONEncoder
+```
+
+
+Settings
+--------
+
+A basic configuration object which locks after it has been configured.
+
+```python
+from optional_django import conf
+
+class Conf(conf.Conf):
+    FOO = 'BAR'
+    BAR = [1,2,3]
+	WOZ = 4
+
+settings = Conf()
+
+print(settings.WOZ)  # 4, or the value of django.conf.settings.SOME_APP['WOZ']
+
+# Raises an error
+settings.WOZ = 5
+
+# Use `configure` instead
+settings.configure(
+    FOO='some value',
+    WOZ=5
+)
+
+print(settings.FOO)  # 'some value'
+print(settings.BAR)  # [1, 2, 3]
+print(settings.WOZ)  # 5
+
+# Configure can only be called once, this raises an error
+settings.configure(WOZ=10)
 ```
 
 
