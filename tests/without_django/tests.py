@@ -41,14 +41,12 @@ class TestOptionalDjangoWithoutDjango(unittest.TestCase):
         settings = Conf()
 
         self.assertFalse(settings._has_been_configured)
-        self.assertFalse(settings._configured_from_env)
 
         settings.configure(
             TEST_SETTING_2='foo'
         )
 
         self.assertTrue(settings._has_been_configured)
-        self.assertFalse(settings._configured_from_env)
 
         self.assertEqual(settings.TEST_SETTING_1, 1)
         self.assertEqual(settings.TEST_SETTING_2, 'foo')

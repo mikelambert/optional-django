@@ -1,7 +1,6 @@
 import warnings
 from . import six
 from .exceptions import ConfigurationError
-from .env import DJANGO_CONFIGURED, DJANGO_SETTINGS
 
 
 class ConfigurationWarning(Warning):
@@ -9,20 +8,8 @@ class ConfigurationWarning(Warning):
 
 
 class Conf(object):
-    django_namespace = None
     _has_been_configured = False
-    _configured_from_env = False
-    _overrides = None
-    _configurable = True
-
-    def __init__(self):
-        if self.django_namespace and DJANGO_CONFIGURED and DJANGO_SETTINGS:
-            overrides = getattr(DJANGO_SETTINGS, self.django_namespace, None)
-            if overrides:
-                self._configured_from_env = True
-                self.configure(**overrides)
-
-        self._lock()
+    _configurable = False
 
     def _unlock(self):
         super(Conf, self).__setattr__('_configurable', True)
