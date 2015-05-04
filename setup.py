@@ -3,7 +3,7 @@ import optional_django
 
 setup(
     name='optional-django',
-    version=optional_django.VERSION,
+    version=optional_django.__version__,
     packages=find_packages(exclude=('tests',)),
     description='Utils for providing optional support for django',
     long_description='Documentation at https://github.com/markfinger/optional-django',
