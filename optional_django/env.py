@@ -19,5 +19,5 @@ if DJANGO_INSTALLED:
             # Try and raise an ImproperlyConfigured error
             getattr(DJANGO_SETTINGS, 'DEBUG', None)
             DJANGO_CONFIGURED = True
-        except ImproperlyConfigured:
+        except (ImportError, ImproperlyConfigured):
             DJANGO_SETTINGS = None
